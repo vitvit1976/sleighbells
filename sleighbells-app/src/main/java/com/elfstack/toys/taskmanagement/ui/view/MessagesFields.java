@@ -47,9 +47,6 @@ public class MessagesFields extends CustomField<SimpleEntity> {
             formLayout.addFormItem(field, f.getCaption());
             layout.add(formLayout);
 
-            ListBox b = new ComboBox();
-            b.setItemLabelGenerator(
-
             if (field instanceof HasListDataView) {
                 ((HasListDataView) field).setItems(f.getSubData());
 

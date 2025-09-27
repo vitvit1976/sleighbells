@@ -52,8 +52,8 @@ public class DataService {
         return String.valueOf(arr);
     }
 
-    public static Map<Integer, String> getRandomMap(TYPE_FIELDS t) {
-        if (!t.getCompClass().getName().endsWith("Map")) return null;
+    public static Map<Integer, String> getRandomMap() {
+      //  if (!t.getCompClass().getName().endsWith("Map")) return null;
         int cnt = (int) (Math.random() * 15) + 5;
         Map<Integer, String> map = new HashMap<>();
         for (int i = 0; i < cnt; i++)

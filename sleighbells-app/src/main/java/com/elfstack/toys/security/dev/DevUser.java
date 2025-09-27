@@ -82,7 +82,8 @@ public final class DevUser implements AppUserPrincipal, UserDetails {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof DevUser user) {
+        if (obj instanceof DevUser) {
+            DevUser user = (DevUser) obj;
             return this.appUser.getUserId().equals(user.appUser.getUserId());
         }
         return false;
