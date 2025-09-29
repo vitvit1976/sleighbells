@@ -52,29 +52,6 @@ public class Utils {
         edt.open();
     }
 
-    /*
-    public static <T> void customGenWindow(List<TestField<T, Component>> list) {
-        Dialog edt = new Dialog();
-        Button btnOk = new Button("OK");
-        Button btnCancel = new Button("отмена", x -> edt.close());
-        VerticalLayout field = new VerticalLayout();
-        list.forEach(x -> {
-            field.add(x.getField());
-        });
-        edt.setModal(true);
-        edt.add(field, new HorizontalLayout(btnOk, btnCancel));
-        edt.open();
-    }
-
-
-    public static void confirmMessage(Predicate<NativeLabel> predicate, ComponentEventListener<ClickEvent<Button>> confirmListener) {
-        confirmMessage(predicate, confirmListener, null, null);
-    }
-
-    public static void confirmMessage(Predicate<NativeLabel> predicate, ComponentEventListener<ClickEvent<Button>> confirmListener, File imageFile) {
-        confirmMessage(predicate, confirmListener, null, imageFile);
-    }
-    */
 
     public static void showOverView() {
         Dialog dialog = new Dialog();
