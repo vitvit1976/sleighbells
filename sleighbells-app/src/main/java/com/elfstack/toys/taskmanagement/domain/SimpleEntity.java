@@ -1,49 +1,43 @@
 package com.elfstack.toys.taskmanagement.domain;
 
+import com.elfstack.toys.taskmanagement.service.DataService;
 import jakarta.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
-@Entity
-@Table(name = "simpleEntity")
+//@Entity
+//@Table(name = "simpleEntity")
 public class SimpleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "task_id")
-    private Long id;
+    private Long id = DataService.getNextID();
 
-    @Transient
+   // @Transient
     private Map<SimpleField, Object> fieldMap = new HashMap<>();
 
     public Map<SimpleField, Object> getFieldMap() {
         return fieldMap;
     }
 
-    public List<SimpleField> getFieldList() {
+   /* public List<SimpleField> getFieldList() {
         return fieldMap.keySet().stream().toList();
     }
 
+    */
+
     public Object getValue(String nmField) {
-        for (Map.Entry<SimpleField, Object> e : fieldMap.entrySet()) {
+        for (Map.Entry<SimpleField, Object> e : fieldMap.entrySet())
             if (e.getKey().getFieldName().equals(nmField)) return e.getValue();
-        }
         return null;
     }
-/*
-    public String getStringValue(String nmField) {
-        Object o = getValue(nmField);
-        if (o == null) return "";
-        else return o.toString();
+
+    public SimpleEntity() {
     }
-*/
     public SimpleEntity(List<SimpleField> fields) {
-       fields.forEach(x->fieldMap.put(x, null));
+        fields.forEach(x -> fieldMap.put(x, null));
     }
 
     public SimpleEntity(Map<SimpleField, Object> fieldMap) {
@@ -54,10 +48,15 @@ public class SimpleEntity {
         fieldMap.put(field, val);
     }
 
+    public void setValue(String nmField, Object val) {
+        for (Map.Entry<SimpleField, Object> e : fieldMap.entrySet())
+            if (e.getKey().getFieldName().equals(nmField)) e.setValue(val);
+    }
+
     public void updValue(SimpleEntity entity) {
         this.fieldMap.putAll(entity.fieldMap);
     }
-/*
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -69,7 +68,7 @@ public class SimpleEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }*/
+    }
 
     @Override
     public String toString() {
@@ -80,4 +79,17 @@ public class SimpleEntity {
     }
 
     private static final Logger log = LoggerFactory.getLogger(SimpleEntity.class);
+
+    public static void main(String[] args) {
+        List<SimpleField> fields = DataService.getFields(true);
+        List<SimpleEntity> simpleEntities = new ArrayList<>();
+
+        for (int x = 0; x < 3; x++) {
+            // for(SimpleField f: fields) f.setFieldValue(nmData +"_f" + x);
+            Map<SimpleField, Object> addFields = new HashMap<>();
+            fields.forEach(z -> addFields.put(z, DataService.getRandomValue(z)));
+            simpleEntities.add(new SimpleEntity(addFields));
+        }
+        System.out.println(Objects.equals(simpleEntities.get(0).id, simpleEntities.get(1).id));
+    }
 }

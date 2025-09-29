@@ -2,10 +2,7 @@ package com.elfstack.toys.taskmanagement.ui.view;
 
 import com.elfstack.toys.security.AppRoles;
 import com.elfstack.toys.taskmanagement.Utils;
-import com.elfstack.toys.taskmanagement.domain.SimpleEntity;
-import com.elfstack.toys.taskmanagement.domain.SimpleField;
-import com.elfstack.toys.taskmanagement.domain.TYPE_ANY_TASK;
-import com.elfstack.toys.taskmanagement.domain.Task;
+import com.elfstack.toys.taskmanagement.domain.*;
 import com.elfstack.toys.taskmanagement.service.DataService;
 import com.elfstack.toys.taskmanagement.service.TaskService;
 import com.vaadin.flow.component.button.Button;
@@ -27,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.vaadin.klaudeta.PaginatedGrid;
 
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.*;
@@ -41,16 +37,6 @@ import java.util.*;
 public class MessagesView extends Main implements RouterLayout {
     private List<SimpleEntity> simpleEntities;
     private PaginatedGrid<SimpleEntity, ?> grid = new PaginatedGrid<>();
-
-    public List<String> getNmFields() {
-        return Arrays.asList("AAA", "BField", "NextField");
-    }
-
-    private void initList(TaskService taskService) {
-        if (!taskService.list(PageRequest.ofSize(1)).isEmpty()) return;
-        for (int i = 0; i < 15; i++)
-            taskService.createTask("task" + i * i, LocalDate.now().minusDays(i * i * i), TYPE_ANY_TASK.values()[(int) Math.floorMod(Math.round(Math.random() * 100), 3)]);
-    }
 
     public MessagesView(TaskService taskService, Clock clock) {
         //   initList(taskService);
@@ -82,14 +68,17 @@ public class MessagesView extends Main implements RouterLayout {
 
         grid.setItems(simpleEntities);
 
-        for (SimpleField f : simpleEntities.get(0).getFieldList()) {
-            grid.addColumn(x -> x.getValue(f.getFieldName()))
+        for (SimpleField f : simpleEntities.get(0).getFieldMap().keySet().stream().toList()) {
+            grid.addColumn(x -> {
+                        Object o = x.getValue(f.getFieldName());
+                        return f.getSubData() != null && o != null? ((SimpleDict)o).getVal() : o;
+                    })
                     .setComparator((o1, o2) -> compareSimple(o1, o2, f))
                     .setHeader(f.getCaption())
                     .setResizable(true);
         }
         GridContextMenu<SimpleEntity> contextMenu = grid.addContextMenu();
-        for (SimpleField f : simpleEntities.get(0).getFieldList()) {
+        for (SimpleField f : simpleEntities.get(0).getFieldMap().keySet().stream().toList()) {
             contextMenu.addItem(f.getCaption(), x -> {
                 x.getItem().get().setValue(f, "EMPTY");
                 grid.getDataProvider().refreshAll();
@@ -103,7 +92,7 @@ public class MessagesView extends Main implements RouterLayout {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         Button btnAdd = new Button("Добавить", new Icon(VaadinIcon.PLUS),
                 x -> {
-                    MessagesFields mf = new MessagesFields(new SimpleEntity(simpleEntities.get(0).getFieldList()));
+                    MessagesFields mf = new MessagesFields(new SimpleEntity(simpleEntities.get(0).getFieldMap().keySet().stream().toList()));
                     Utils.customWindow(mf,
                             y -> {
                                 SimpleEntity entity = mf.generateModelValue();
@@ -155,15 +144,12 @@ public class MessagesView extends Main implements RouterLayout {
     }
 
     private Object getValSimple(SimpleEntity s, SimpleField f){
-        Class c = f.getTypeField().getCompClass();
-        return c.cast(s.getValue(f.getFieldName()));
+        return f.getFieldClass().cast(s.getValue(f.getFieldName()));
     }
 
     private int compareSimple(SimpleEntity o1, SimpleEntity o2, SimpleField f) {
         try {
            return ((Comparable) getValSimple(o1, f)).compareTo(getValSimple(o2, f));
-           // if (c.isInstance(Comparator.class))
-             //   return Map.class.compare(o1.getValue(f.getFieldName()), o1.getValue(f.getFieldName()));
         } catch (Exception e) {
             return 0;
         }

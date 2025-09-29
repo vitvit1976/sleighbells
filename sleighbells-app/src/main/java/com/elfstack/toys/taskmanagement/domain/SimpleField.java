@@ -1,24 +1,25 @@
 package com.elfstack.toys.taskmanagement.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SimpleField {
     private String fieldName;
     private Class<?> fieldClass;
     private String caption;
 
     private TYPE_FIELDS typeField;
-    private List<SimpleEntity> subData;
+    private List<SimpleDict> subData;
 
     public SimpleField() {
     }
 
-    public List<SimpleEntity> getSubData() {
+    public List<SimpleDict> getSubData() {
         return subData;
     }
 
@@ -58,11 +59,20 @@ public class SimpleField {
         this.typeField = typeField;
     }
 
+
+    public SimpleField(String fieldName, Class<?> fieldClass) {
+        this(fieldName, fieldClass, fieldName, TYPE_FIELDS.TFTextField);
+    }
+
+    public SimpleField(String fieldName, Class<?> fieldClass, String caption) {
+        this(fieldName, fieldClass, caption, TYPE_FIELDS.TFTextField);
+    }
+
     public SimpleField(String fieldName, Class<?> fieldClass, String caption, TYPE_FIELDS typeField) {
         this(fieldName, fieldClass, caption, typeField, null);
     }
 
-    public SimpleField(String fieldName, Class<?> fieldClass, String caption, TYPE_FIELDS typeField, List<SimpleEntity>  subData) {
+    public SimpleField(String fieldName, Class<?> fieldClass, String caption, TYPE_FIELDS typeField, List<SimpleDict>  subData) {
         this.fieldName = fieldName;
         this.fieldClass = fieldClass;
         this.caption = caption;
@@ -93,6 +103,11 @@ public class SimpleField {
 
     @Override
     public String toString() {
-        return String.format("%s: %s(%s)", fieldName, caption, fieldClass.getName());
+        return "SimpleField{" +
+                "fieldName='" + fieldName + '\'' +
+                ", fieldClass=" + fieldClass +
+                ", caption='" + caption + '\'' +
+                ", typeField=" + typeField +
+                ", subData=" + subData;
     }
 }

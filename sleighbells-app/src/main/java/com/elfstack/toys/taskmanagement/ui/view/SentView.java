@@ -16,11 +16,6 @@ import java.util.List;
 @Menu(order = 0, icon = "vaadin:clipboard-check", title = "Task sent")
 @PermitAll
 public class SentView extends MessagesView {
-
-    @Override
-    public List<String> getNmFields() {
-        return Arrays.asList("UUii", "sent", "s_Next", "NextField", "more_anyField");
-    }
     public SentView(TaskService taskService, Clock clock) {
         super(taskService, clock);
     }

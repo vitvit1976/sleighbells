@@ -17,12 +17,6 @@ import java.util.List;
 @Menu(order = 0, icon = "vaadin:clipboard-check", title = "Task inbox")
 @PermitAll
 public class InboxView extends MessagesView {
-
-    @Override
-    public List<String> getNmFields() {
-        return Arrays.asList("inbox1", "ibox_Next", "NextField", "more_field", "anyField");
-    }
-
     public InboxView(TaskService taskService, Clock clock) {
         super(taskService, clock);
     }

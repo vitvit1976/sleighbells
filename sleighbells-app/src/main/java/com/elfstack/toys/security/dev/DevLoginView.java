@@ -65,6 +65,33 @@ class DevLoginView extends Main implements BeforeEnterObserver {
  */
     }
 
+    private Component createSampleUserCard(DevUser user) {
+        var card = new Div();
+        card.addClassNames("dev-user-card");
+
+        var fullName = new H3(user.getAppUser().getFullName());
+
+        var credentials = new DescriptionList();
+        credentials.add(new DescriptionList.Term("Username"), new DescriptionList.Description(user.getUsername()));
+        credentials.add(new DescriptionList.Term("Password"),
+                new DescriptionList.Description(SampleUsers.SAMPLE_PASSWORD));
+
+        // Make it easier to log in while still going through the normal authentication process.
+        var loginButton = new Button(VaadinIcon.SIGN_IN.create(), event -> {
+            login.getElement().executeJs("""
+                    document.getElementById("vaadinLoginUsername").value = $0;
+                    document.getElementById("vaadinLoginPassword").value = $1;
+                    document.forms[0].submit();
+                    """, user.getUsername(), SampleUsers.SAMPLE_PASSWORD);
+        });
+        loginButton.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_TERTIARY);
+
+        card.add(new Div(fullName, credentials));
+        card.add(loginButton);
+
+        return card;
+    }
+
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         if (authenticationContext.isAuthenticated()) {

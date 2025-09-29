@@ -17,11 +17,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
-import java.util.Map;
 
 public enum TYPE_FIELDS {
     TFTextField(TextField.class),
-    TFEmailField(EmailField.class),
+ //   TFEmailField(EmailField.class),
     TFTextArea(TextArea.class),
     TFNumberField(NumberField.class, Double.class),
     TFIntegerField(IntegerField.class, Integer.class),
@@ -30,16 +29,16 @@ public enum TYPE_FIELDS {
     TFDateTimePicker(DateTimePicker.class, LocalDateTime.class),
     TFDatePicker(DatePicker.class, LocalDate.class),
     TFTimePicker(TimePicker.class, LocalTime.class),
-    TFComboBox(ComboBox.class, true),
-    TFListBox(ListBox.class, true),
-    TFMultiSelectListBox(MultiSelectListBox.class, true),
-    TFMultiSelectComboBox(MultiSelectComboBox.class, true),
-    TFSelect(Select.class, true),
-    TFRadioButtonGroup(RadioButtonGroup.class, true)
+    TFComboBox(ComboBox.class, SimpleDict.class, true),
+    TFListBox(ListBox.class, SimpleDict.class, true),
+   // TFMultiSelectListBox(MultiSelectListBox.class, Set.class, true),
+   // TFMultiSelectComboBox(MultiSelectComboBox.class, Set.class, true),
+    TFRadioButtonGroup(RadioButtonGroup.class, SimpleDict.class, true),
+    TFSelect(Select.class, SimpleDict.class, true)
 ;
 
     private Class<? extends AbstractField> clazz;
-    private Class<?> compClass;
+    private Class<? extends Comparable> compClass;
 
     public Boolean getHasChild() {
         return hasChild;
@@ -51,7 +50,7 @@ public enum TYPE_FIELDS {
         this(clazz, false); 
     }
 
-    TYPE_FIELDS(Class<? extends AbstractField> clazz, Class<?> compClass, Boolean hasChild) {
+    TYPE_FIELDS(Class<? extends AbstractField> clazz, Class<? extends Comparable> compClass, Boolean hasChild) {
         this.clazz = clazz;
         this.compClass = compClass;
         this.hasChild = hasChild;
@@ -61,7 +60,7 @@ public enum TYPE_FIELDS {
         this(clazz, String.class, hasChild);
     }
 
-    TYPE_FIELDS(Class<? extends AbstractField> clazz, Class<?> compClass) {
+    TYPE_FIELDS(Class<? extends AbstractField> clazz, Class<? extends Comparable> compClass) {
         this(clazz, compClass, false);
     }
 

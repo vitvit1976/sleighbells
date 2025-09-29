@@ -21,45 +21,35 @@ import static java.util.Objects.requireNonNull;
  * production. It's primarily used by the {@link DevUser} class to represent test user information.
  * </p>
  *
- * @param userId            the unique identifier for the user (never {@code null})
- * @param preferredUsername the user's preferred username (never {@code null}).
- * @param fullName          the user's full name (never {@code null})
- * @param profileUrl        the URL to the user's profile page, or {@code null} if not available
- * @param pictureUrl        the URL to the user's profile picture, or {@code null} if not available
- * @param email             the user's email address, or {@code null} if not available
- * @param zoneId            the user's time zone (never {@code null})
- * @param locale            the user's locale (never {@code null})
+ * @param userId
+ *            the unique identifier for the user (never {@code null})
+ * @param preferredUsername
+ *            the user's preferred username (never {@code null}).
+ * @param fullName
+ *            the user's full name (never {@code null})
+ * @param profileUrl
+ *            the URL to the user's profile page, or {@code null} if not available
+ * @param pictureUrl
+ *            the URL to the user's profile picture, or {@code null} if not available
+ * @param email
+ *            the user's email address, or {@code null} if not available
+ * @param zoneId
+ *            the user's time zone (never {@code null})
+ * @param locale
+ *            the user's locale (never {@code null})
  * @see DevUser The development user class that uses this record
  * @see AppUserInfo The interface this record implements
  */
-class DevUserInfo implements AppUserInfo {
-    private UserId userId;
-    private String preferredUsername;
-    private String fullName;
-    private String profileUrl;
-    private String pictureUrl;
-    private String email;
-    private ZoneId zoneId;
-    private Locale locale;
+record DevUserInfo(UserId userId, String preferredUsername, String fullName, @Nullable String profileUrl,
+        @Nullable String pictureUrl, @Nullable String email, ZoneId zoneId, Locale locale) implements AppUserInfo {
 
-    public DevUserInfo(UserId userId, String preferredUsername, String fullName, String profileUrl, String pictureUrl, String email, ZoneId zoneId, Locale locale) {
-        this.userId = userId;
-        this.preferredUsername = preferredUsername;
-        this.fullName = fullName;
-        this.profileUrl = profileUrl;
-        this.pictureUrl = pictureUrl;
-        this.email = email;
-        this.zoneId = zoneId;
-        this.locale = locale;
-    }
-
-/*   DevUserInfo {
+    DevUserInfo {
         requireNonNull(userId);
         requireNonNull(preferredUsername);
         requireNonNull(fullName);
         requireNonNull(zoneId);
         requireNonNull(locale);
-    }*/
+    }
 
     @Override
     public UserId getUserId() {

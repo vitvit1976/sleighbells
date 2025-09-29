@@ -118,8 +118,8 @@ public class CurrentUser {
 
         var principal = authentication.getPrincipal();
 
-        if (principal instanceof AppUserPrincipal){
-                    return (AppUserPrincipal) principal;
+        if (principal instanceof AppUserPrincipal appUserPrincipal) {
+            return appUserPrincipal;
         }
 
         log.warn("Unexpected principal type: {}", principal.getClass().getName());

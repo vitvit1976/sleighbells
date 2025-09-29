@@ -1,21 +1,27 @@
 package com.elfstack.toys.taskmanagement.service;
 
-import com.elfstack.toys.taskmanagement.domain.Country;
-import com.elfstack.toys.taskmanagement.domain.SimpleEntity;
-import com.elfstack.toys.taskmanagement.domain.SimpleField;
-import com.elfstack.toys.taskmanagement.domain.TYPE_FIELDS;
+import com.elfstack.toys.taskmanagement.domain.*;
+import com.vaadin.flow.data.selection.MultiSelect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 public class DataService {
+    private static AtomicLong nextID = new AtomicLong(0L);
     private static List<Country> countries = null;
 
     private static Map<String, List<SimpleEntity>> stringListMap = new HashMap<>();
+
+    public static Long getNextID() {
+        return nextID.getAndAdd(1L);
+    }
 
     public static List<Country> getCountries() {
         if (countries == null) loadFromFile();
@@ -26,21 +32,20 @@ public class DataService {
         try {
             int ind = (int) (Math.random() * 100) % TYPE_FIELDS.values().length;
             return Arrays.asList(TYPE_FIELDS.values()).get(ind);
-        } catch (Exception e){
+        } catch (Exception e) {
             return TYPE_FIELDS.TFTextField;
         }
     }
 
-    private static List<SimpleField> getFields(Boolean hasChild) {
-        int max = (int) (Math.random() * 5) + 5;
-
+    public static List<SimpleField> getFields(Boolean hasChild) {
+        int max = (int) (Math.random() * 10) + 10;
         return Stream.iterate(2, x -> x + 3)
                 .limit(max + 1)
                 .map(x -> "field_" + x.toString())
                 .map(x -> {
                     TYPE_FIELDS typeField = getRandomType(hasChild);
                     return new SimpleField(x, typeField.getCompClass(), typeField.name() + x.toUpperCase(),
-                            typeField, hasChild && typeField.getHasChild()? getItems(getRandom(10), false) : null);
+                            typeField, hasChild && typeField.getHasChild() ? getDicts() : null);
                 }).toList();
     }
 
@@ -52,18 +57,19 @@ public class DataService {
         return String.valueOf(arr);
     }
 
-    public static Map<Integer, String> getRandomMap() {
-      //  if (!t.getCompClass().getName().endsWith("Map")) return null;
-        int cnt = (int) (Math.random() * 15) + 5;
-        Map<Integer, String> map = new HashMap<>();
-        for (int i = 0; i < cnt; i++)
-            map.put(i * i, getRandom(cnt));
-        return map;
-    }
+    public static Object getRandomValue(SimpleField f) {
+        TYPE_FIELDS t = f.getTypeField();
+        if (f.getSubData() != null) {
+            SimpleDict intStr = f.getSubData().get((int) (Math.random() * 5));
+            if (t.getCompClass().isInstance(MultiSelect.class)) {
+                log.info("{} :{}", f.getFieldName(), t.getCompClass());
+                return new HashSet<>(Collections.singletonList(intStr));
+            }
+            return intStr;
+        }
 
-    public static Object getRandomValue(TYPE_FIELDS t) {
-        Double aDouble = (Math.random() * 10000) + 1000;
-        switch (t.getCompClass().getName()) {
+        Double aDouble =(Math.random() *Math.random() * 1000000) + 10;
+        switch (f.getFieldClass().getName()) {
             case "java.lang.Integer":
                 return (int) Math.round(aDouble);
             case "java.lang.String":
@@ -85,6 +91,7 @@ public class DataService {
         return null;
     }
 
+
     private static List<SimpleEntity> getItems(String nmData, Boolean hasChild) {
         List<SimpleField> fields = getFields(hasChild);
         List<SimpleEntity> simpleEntities = new ArrayList<>();
@@ -92,11 +99,25 @@ public class DataService {
         for (int x = 0; x < cnt; x++) {
             // for(SimpleField f: fields) f.setFieldValue(nmData +"_f" + x);
             Map<SimpleField, Object> addFields = new HashMap<>();
-            fields.forEach(z -> addFields.put(z,
-                    getRandomValue(z.getTypeField())));
+            fields.forEach(z -> addFields.put(z, getRandomValue(z)));
             simpleEntities.add(new SimpleEntity(addFields));
         }
         return simpleEntities;
+    }
+
+    private static List<SimpleDict> getDicts() {
+        List<SimpleDict> simpleDicts = new ArrayList<>();
+        int cnt = (int) (Math.random() * 10) + 10;
+        List<SimpleField> fields = new ArrayList<>();
+        fields.add(new SimpleField("key", Integer.class));
+        fields.add(new SimpleField("value", Date.class));
+        for (int x = 0; x < cnt; x++) {
+            Map<SimpleField, Object> addFields = new HashMap<>();
+            fields.forEach(z -> addFields.put(z, getRandomValue(z)));
+            simpleDicts.add(new SimpleDict(new SimpleEntity(addFields)));
+        }
+        simpleDicts.sort(SimpleDict::compareTo);
+        return simpleDicts;
     }
 
     public static List<SimpleEntity> getSimpleEntities(String nmData, Boolean hasChild) {
@@ -145,5 +166,5 @@ public class DataService {
         for (int i = 0; i < 100; i++) System.out.println(getRandom((int) (Math.random() * 5) + 5));
     }
 
-//    private static final Logger log = LoggerFactory.getLogger(DataService.class);
+   private static final Logger log = LoggerFactory.getLogger(DataService.class);
 }
